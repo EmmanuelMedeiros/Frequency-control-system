@@ -54,7 +54,25 @@ export default class UserController {
     }
 
     static async registerNewUser(req: Request, res: Response) {
-        return res.status(200).json({message: "passou"})
+
+        const {name} = req.body
+
+        try {
+            const userToCreate: User = new User(name)
+            const businessResponse: EndMessage = await UserBusiness.registerNewUser(userToCreate)
+
+            if(businessResponse.status == 201) {
+                return res.status(businessResponse.status).json({data: businessResponse.response})
+            } else {
+                return res.status(businessResponse.status).json({error: businessResponse.response})
+            }
+        }catch(err: any) {
+            return res.status(400).json({error: err.toString()})
+        }
+    }
+
+    static async getUserByID(req: Request, res: Response) {
+        
     }
 
 }

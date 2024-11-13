@@ -19,4 +19,8 @@ export default class User {
         }
     }
 
+    setUUID(uuid:string) {
+        this.uuid = uuid
+    }
+
 }

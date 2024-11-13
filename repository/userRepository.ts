@@ -1,5 +1,6 @@
 import UserBusiness from "../business/userBusiness";
 import Admin from "../classes/Admin";
+import User from "../classes/User";
 import client from "../db/databasePg";
 
 import EndMessage from "../interface/EndMessage";
@@ -62,6 +63,23 @@ export default class UserRepository {
             return dbResponse = {response: rowsToShow, status: 200}
 
         }catch(err: any) {
+            dbResponse = {response: err.toString(), status: 400}
+            return dbResponse
+        }
+
+    }
+
+    static async registerUser(user: User) {
+
+        let dbResponse: EndMessage
+
+        try {
+            await client.query(`BEGIN`)
+            const queryString: string = `insert into users(uuid, name, role) values($1, $2, 'USER') returning name`
+            const response = await client.query(queryString, [user.uuid, user.name])
+            await client.query('COMMIT')
+            return dbResponse = {response: `Usuário ${response.rows[0].name} criado com sucesso!`, status: 201}
+        }catch(err:any) {
             dbResponse = {response: err.toString(), status: 400}
             return dbResponse
         }

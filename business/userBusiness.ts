@@ -1,4 +1,5 @@
 import Admin from "../classes/Admin";
+import User from "../classes/User";
 
 import EndMessage from "../interface/EndMessage";
 
@@ -59,7 +60,7 @@ export default class UserBusiness {
                 return dbResponse
             }
 
-            const token = jwt.sign(dbResponse.response, process.env.JWT_SECRET)
+            const token = jwt.sign(dbResponse.response, process.env.JWT_SECRET, {expiresIn: '12h'})
             endMessage = {response: [{jwt: token}, {user: dbResponse.response}], status: 200}
             return endMessage
 
@@ -67,6 +68,24 @@ export default class UserBusiness {
             endMessage = {response: err.toString(), status: 400}
             return endMessage
         }
+
+    }
+
+    static async registerNewUser(user: User) {
+
+        let endMessage: EndMessage
+        const newUser: User = user
+
+        if(user.name.length < 4) {
+            endMessage = {response: "O nome do usuário deve conter mais de 4 caracteres", status: 400}
+            return endMessage
+        }
+
+        const userUUID: string = crypto.randomUUID()
+        newUser.setUUID(userUUID)
+
+        const dbResponse: EndMessage = await UserRepository.registerUser(newUser)
+        return dbResponse
 
     }
 
