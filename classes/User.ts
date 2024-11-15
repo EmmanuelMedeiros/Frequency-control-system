@@ -7,7 +7,7 @@ export default class User {
     
     constructor(name: string, uuid?:string) {
         this.verifyParam("Nome", name)
-        this.name = name
+        this.name = name.trim()
         this.uuid = uuid
     }
 

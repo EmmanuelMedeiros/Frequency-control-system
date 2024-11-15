@@ -71,8 +71,36 @@ export default class UserController {
         }
     }
 
-    static async getUserByID(req: Request, res: Response) {
+    static async getUserByUUID(req: Request, res: Response) {
         
+        const uuid:string = req.params.uuid
+
+        try {
+            const businessResponse: EndMessage = await UserBusiness.getUserByUUID(uuid)
+            if(businessResponse.status == 200) {
+                return res.status(businessResponse.status).json({data: businessResponse.response})
+            } else {
+                return res.status(businessResponse.status).json({error: businessResponse.response})
+            }
+        }catch(err: any) {
+            return res.status(400).json({error: err.toString()})
+        }
+    }
+
+    static async getListOfUsers(req: Request, res: Response) {
+        
+        try {
+
+            const businessResponse: EndMessage = await UserBusiness.getListOfUsers()
+
+            if(businessResponse.status == 200) {
+                return res.status(businessResponse.status).json({data: businessResponse.response})
+            } else {
+                return res.status(businessResponse.status).json({error: businessResponse.response})
+            }
+        }catch(err: any) {
+            return res.status(400).json({error: err.toString()})
+        }
     }
 
 }

@@ -1,9 +1,24 @@
+create type role(
+    as
+    enum('ADMIN', 'USER')
+)
+
 create table users(
  uuid text not null unique primary key,
  name varchar(40) not null,
  password text unique,
  email varchar(100) unique,
- role role not null
+ role role not null,
+ created_at date not null
 )
 
 
+create table frequency(
+ uuid text not null primary key,
+ date date not null,
+ user_id text not null references users(uuid),
+ frequency_a string null,
+ frequency_b string null,
+ frequency_c string null,
+ frequency_d string null
+)

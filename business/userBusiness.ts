@@ -10,11 +10,15 @@ import crypto from 'crypto'
 
 const jwt = require("jsonwebtoken")
 
+import moment from 'moment'
+
 require('dotenv').config()
 
 export default class UserBusiness {
 
     static async registerFirstAdmin(admin: Admin) {
+
+        const createdAt: string = moment().format('YYYY/MM/DD')
 
         const hash = await UserBusiness.generatingHash(admin.password.trim())
         const userUUID: string = crypto.randomUUID()
@@ -26,7 +30,7 @@ export default class UserBusiness {
             userUUID
         )
         
-        const dbResponse: EndMessage = await UserRepository.registerFirstAdmin(adminWithEncryptedPassword)
+        const dbResponse: EndMessage = await UserRepository.registerFirstAdmin(adminWithEncryptedPassword, createdAt)
         return dbResponse
     }
 
@@ -73,6 +77,8 @@ export default class UserBusiness {
 
     static async registerNewUser(user: User) {
 
+        const createdAt: string = moment().format('YYYY/MM/DD')
+
         let endMessage: EndMessage
         const newUser: User = user
 
@@ -81,12 +87,52 @@ export default class UserBusiness {
             return endMessage
         }
 
+        const nameExists: boolean = await UserBusiness.checkIfUserNameExists(user.name)
+        if(nameExists) {
+            endMessage = {response: "Esse nome já está cadastrado", status: 400}
+            return endMessage
+        }
+
         const userUUID: string = crypto.randomUUID()
         newUser.setUUID(userUUID)
 
-        const dbResponse: EndMessage = await UserRepository.registerUser(newUser)
+        const dbResponse: EndMessage = await UserRepository.registerUser(newUser, createdAt)
         return dbResponse
 
+    }
+
+    static async getUserByUUID(uuid: string) {
+
+        let endMessage: EndMessage
+
+        if(!uuid) {
+            endMessage = {response: "UUID não pode ser vazio", status: 400}
+        }
+        
+        const dbResponse: EndMessage = await UserRepository.getUserByUUID(uuid)
+        return dbResponse
+
+    }
+
+    static async getListOfUsers() {
+        
+        const dbResponse: EndMessage = await UserRepository.getListOfUsers()
+        return dbResponse
+
+    }
+
+    static async checkIfUserNameExists(nameToCheck: string) {
+
+        let nameAlreadyExists: boolean = false 
+        const listOfUsers: Array<User> = (await UserBusiness.getListOfUsers()).response
+
+        listOfUsers.forEach((element) => {
+            if(element.name == nameToCheck) {
+                nameAlreadyExists = true
+            }
+        })
+
+        return nameAlreadyExists
     }
 
     static async generatingHash(elementToHash: string) {
