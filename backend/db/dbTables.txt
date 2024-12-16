@@ -3,6 +3,11 @@ create type role(
     enum('ADMIN', 'USER')
 )
 
+create type frequency_type as enum('BEGGINING OF DAY',
+'LUNCH TIME',
+'BACK FROM LUNCH',
+'ENDING OF DAY')
+
 create table users(
  uuid text not null unique primary key,
  name varchar(40) not null,
@@ -12,13 +17,10 @@ create table users(
  created_at date not null
 )
 
-
-create table frequency(
- uuid text not null primary key,
- date date not null,
- user_id text not null references users(uuid),
- frequency_a string null,
- frequency_b string null,
- frequency_c string null,
- frequency_d string null
+create table frequency_items(
+	uuid text not null primary key,
+	frequency_uuid text not null references frequency(uuid),
+	time timestamp not null,
+	frequency_type frequency_type not null,
+	picture text
 )

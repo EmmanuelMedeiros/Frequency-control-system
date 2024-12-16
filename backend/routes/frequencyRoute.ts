@@ -3,6 +3,7 @@ import jsonAuthentication from "../middleware/jsonAuth"
 
 const router = require('express').Router()
 
-router.get('/set/:uuid', jsonAuthentication ,FrequencyController.setFrequency)
+router.post('/set/:uuid'    , jsonAuthentication, FrequencyController.setFrequency)
+router.get('/last_hit/:uuid', jsonAuthentication, FrequencyController.searchForLastFrequencyHit)
 
 module.exports = router

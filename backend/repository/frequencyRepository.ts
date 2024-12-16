@@ -6,7 +6,55 @@ import FrequencyTime from "../enum/FrequencyTime";
 
 export default class FrequencyRepository {
 
-    static async dailyFrequencies(currentTime:string, frequencyUUID: string) {
+    static async deleteFrequencyHeaders() {
+
+        let dbResponse: EndMessage;
+
+        try {
+
+            await client.query('BEGIN');
+            const sqlString: string = 'delete from frequency f where f.uuid not in (select frequency_uuid from frequency_items)';
+            const result = await client.query(sqlString);
+            await client.query('COMMIT');
+
+            dbResponse = {response: `${result.rowCount} cabeçalhos de frequência limpos!`, status: 200};
+            return dbResponse;
+
+        }catch(err: any) {
+            await client.query('ROLLBACK')
+            dbResponse = {response: err.toString(), status: 500};
+            return dbResponse
+        }
+    }
+
+    static async hitMidDayFrequency(currentTime: string, frequencyTime: FrequencyTime) {
+
+        let dbResponse: EndMessage
+
+        try {
+            await client.query('BEGIN')
+
+            const sqlString: string = `update frequency set ${frequencyTime} = $1 where frequency_a != '' and frequency_d is null`;
+            const result = await client.query(sqlString, [currentTime]);
+
+            if(result.rowCount && result.rowCount > 0) {
+                dbResponse = {response: `${result.rowCount} frequências atualizadas com a entrada para horário de almoço`, status: 200};
+            } else {
+                dbResponse = {response: `Nenhuma frequência alterada com entrada para horário de almoço`, status: 204};
+            }
+
+            await client.query('COMMIT');
+            return dbResponse;
+
+        } catch(err: any) {
+            await client.query('ROLLBACK')
+            dbResponse = {response: err.toString(), status: 500};
+            return dbResponse
+        }
+
+    }
+
+    static async dailyFrequencies(currentFrequency: Frequency, frequencyItemUUID: string, frequencyPicture?: string): Promise<EndMessage> {
 
         let dbResponse: EndMessage
         let frequencyToSet: number = 0
@@ -15,22 +63,17 @@ export default class FrequencyRepository {
         try {
 
             await client.query(`BEGIN`)
-            const queryString: string = `select frequency_a, frequency_b, frequency_c, frequency_d from frequency fr where fr.uuid = $1`
-            const result = await client.query(queryString, [frequencyUUID])
+            const queryString: string = `select
+                                        	frequency_type
+                                        from
+                                        	frequency_items
+                                        where
+                                        	frequency_uuid = $1`
+
+            const result = await client.query(queryString, [currentFrequency.uuid])
             await client.query(`COMMIT`)
 
-            if(result.rows[0].frequency_a == null) {
-                frequencyToSet = 0
-            } else if(result.rows[0].frequency_b == null) {
-                frequencyToSet = 1
-            } else if(result.rows[0].frequency_c == null) {
-                frequencyToSet = 2
-            } else if(result.rows[0].frequency_d == null) {
-                frequencyToSet = 3
-            } else {
-                frequencyToSet = 4
-            }
-            
+            if (result.rowCount != null) frequencyToSet = result.rowCount
 
             switch(frequencyToSet) {
                 case 0: {
@@ -52,25 +95,44 @@ export default class FrequencyRepository {
             }
 
             if(frequencyToSet < 4) { 
-                await client.query('BEGIN')
-                const queryStringB: string = `update frequency set ${frequencyTime} = $1 where uuid = $2`
-                const insertion = await client.query(queryStringB, [currentTime, frequencyUUID])
-                await client.query('COMMIT')
 
-                dbResponse = {status: 200, response: [{frequencyUUID: frequencyUUID}, {ponto: frequencyToSet + 1 + "° ponto"}]}
+                let result
+
+                if((frequencyToSet == 0 || frequencyToSet == 3) && !frequencyPicture) {
+                    dbResponse = {status: 400, response: 'É necessário uma foto para salvar esse registro!'};
+                    return dbResponse;
+                }
+
+                await client.query('BEGIN')
+
+                let queryStringB: string
+
+                if(frequencyPicture) {
+                    queryStringB = `insert into frequency_items(uuid, frequency_uuid, time, frequency_type, picture) values($1, $2, $3, $4, $5)`
+                    result = await client.query(queryStringB, [frequencyItemUUID, currentFrequency.uuid, currentFrequency.time, frequencyTime, frequencyPicture])
+                } else{
+                    queryStringB = `insert into frequency_items(uuid, frequency_uuid, time, frequency_type) values($1, $2, $3, $4)`
+                    result = await client.query(queryStringB, [frequencyItemUUID, currentFrequency.uuid, currentFrequency.time, frequencyTime])
+                }
+
+                await client.query('COMMIT')    
+                dbResponse = {status: 200, response: [{frequencyUUID: currentFrequency.uuid}, {ponto: frequencyToSet + 1 + "° ponto"}]}
                 return dbResponse
+
             } else {
                 return dbResponse = {status: 400, response: "Todos os pontos do dia já foram batidos"}
             }
 
         }catch(err: any) {
-            dbResponse = {response: err.toString(), status: 400}
+            await client.query('ROLLBACK')
+            console.log(err.toString())
+            dbResponse = {status: 500, response: err.toString()};
             return dbResponse
         }
 
     }
 
-    static async searchFrequencyOfTheDay(date:string, userUUID: string) {
+    static async searchFrequencyOfTheDay(date:string, userUUID: string): Promise<EndMessage> {
 
         let dbResponse: EndMessage
 
@@ -85,19 +147,19 @@ export default class FrequencyRepository {
                 return dbResponse
             }
 
-            dbResponse = {status: 200, response: result.rows[0].uuid}
+            dbResponse = {status: 200, response: {frequencyUUID: result.rows[0].uuid, lastFrequency: result.rows[0].frequency_d}}
             return dbResponse
 
         }catch(err: any) {
+            await client.query('ROLLBACK')
             dbResponse = {response: err.toString(), status: 400}
             return dbResponse
         }
     }
 
-    static async createFrequencyOfTheDay(date: string, userUUID: string, frequencyUUID: string) {
+    static async createFrequencyOfTheDay(date: string, userUUID: string, frequencyUUID: string): Promise<EndMessage> {
 
         let dbResponse: EndMessage
-
 
         try {
             await client.query(`BEGIN`)
@@ -105,10 +167,11 @@ export default class FrequencyRepository {
             const result = await client.query(queryString, [frequencyUUID, date, userUUID])
             await client.query(`COMMIT`)
 
-            dbResponse = {response: result.rows[0].uuid, status: 200}
+            dbResponse = {response: {frequencyUUID: result.rows[0].uuid}, status: 200}
             return dbResponse
 
         }catch(err: any) {
+            await client.query('ROLLBACK')
             dbResponse = {response: err.toString(), status: 400}
             return dbResponse
         }

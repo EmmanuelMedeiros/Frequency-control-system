@@ -3,11 +3,56 @@ import EndMessage from "../interface/EndMessage";
 import Frequency from "../classes/Frequency";
 import FrequencyRepository from "../repository/frequencyRepository";
 
-import crypto from 'crypto'
+import { CronJob } from "cron";
+
+import crypto from 'crypto';
+import { stdout } from "process";
+import FrequencyTime from "../enum/FrequencyTime";
+
+const automaticFrequency = new CronJob('0 0 12,13 * * *', async function () {
+    await FrequencyBusiness.hitAutomaticFrequency();
+},
+    null,
+    true,
+    "America/Sao_Paulo"
+);
+
+const clearEmptyFrequencyHeaders = new CronJob('0 0 0 * * *', async function() {
+    await FrequencyBusiness.deleteEmptyFrequencyHeaders();
+},
+    null,
+    true,
+    "America/Sao_Paulo"
+);
 
 export default class FrequencyBusiness {
 
-    static async setFrequency(userUUID: string) {
+    static async deleteEmptyFrequencyHeaders(): Promise<EndMessage> {
+
+        const dbResponse: EndMessage = await FrequencyRepository.deleteFrequencyHeaders();
+
+        console.log(dbResponse);
+        return dbResponse;
+    }
+
+    static async hitAutomaticFrequency(): Promise<EndMessage> {
+
+        const currentTime: string = moment().format('HH:mm:ss')
+        let frequencyTime: FrequencyTime;
+
+        if(currentTime > '12:00:00') {
+            frequencyTime = FrequencyTime["BACK FROM LUNCH"]
+        } else {
+            frequencyTime = FrequencyTime["LUNCH TIME"]
+        }
+
+        const dbResponse: EndMessage = await FrequencyRepository.hitMidDayFrequency(currentTime, frequencyTime);
+
+        console.log(dbResponse)
+        return dbResponse
+    }
+
+    static async setFrequency(userUUID: string, base64: string|undefined): Promise<EndMessage> {
 
         let frequencyUUID: string
         let endMessage: EndMessage
@@ -15,33 +60,34 @@ export default class FrequencyBusiness {
         const currentTime: string = moment().format('HH:mm:ss')
 
         const currentFrequency: Frequency = new Frequency(currentDate, currentTime)
+        const frequencyItemUUID: string = currentFrequency.uuid
 
         if(!userUUID) {
             endMessage = {status: 404, response: "Nenhum usuário encontrado com esse UUID"}
             return endMessage
         }
 
-        const searchForFrequency: EndMessage = await FrequencyBusiness.searchFrequencyOfTheDay(userUUID)
+        const searchForFrequency: EndMessage = await FrequencyBusiness.searchFrequencyOfTheDay(userUUID, true)
 
         if(searchForFrequency.status != 200) {
             return searchForFrequency
         }
 
-        frequencyUUID = searchForFrequency.response
+        frequencyUUID = searchForFrequency.response.frequencyUUID
+        currentFrequency.uuid = frequencyUUID;
 
-        const setUpFrequency = await FrequencyRepository.dailyFrequencies(currentTime, frequencyUUID)
-
-        endMessage = {status: 200, response: setUpFrequency}
-        return endMessage
+        const setUpFrequency = await FrequencyRepository.dailyFrequencies(currentFrequency, frequencyItemUUID, base64);
+        return setUpFrequency
 
     }
 
-    static async searchFrequencyOfTheDay(userUUID: string) {
+    static async searchFrequencyOfTheDay(userUUID: string, createRow: boolean): Promise<EndMessage> {
 
         const currentDate: string = moment().format("YYYY/MM/DD")
 
         const dbResponse: EndMessage = await FrequencyRepository.searchFrequencyOfTheDay(currentDate, userUUID)
-        if(dbResponse.status != 200) {
+
+        if(dbResponse.status != 200 && createRow) {
             const creatingFrequency: EndMessage = await FrequencyBusiness.createFrequencyOfTheDay(userUUID)
             return creatingFrequency
         }
@@ -50,7 +96,7 @@ export default class FrequencyBusiness {
 
     }
 
-    static async createFrequencyOfTheDay(userUUID: string) {
+    static async createFrequencyOfTheDay(userUUID: string): Promise<EndMessage> {
 
         const frequencyUUID: string = crypto.randomUUID()
         const currentDate: string = moment().format("YYYY/MM/DD")

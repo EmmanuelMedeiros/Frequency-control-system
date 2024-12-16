@@ -1,15 +1,16 @@
-import { verify } from "crypto"
+import crypto from 'crypto'
 
 export default class User {
 
-    name: string
-    uuid?: string
+    private _name: string
+    private _uuid?: string
     
-    constructor(name: string, uuid?:string) {
-        this.verifyParam("Nome", name)
-        this.name = name.trim()
-        this.uuid = uuid
-    }
+    
+    constructor(name: string, uuid?:string)  {
+        this.verifyParam("Nome", name);
+        this._name = name.trim();
+        this._uuid = uuid || crypto.randomUUID();
+    };
 
     verifyParam(param:string, value:string|number) {
         if(!value) {
@@ -17,10 +18,23 @@ export default class User {
         } else if(typeof value == "string" && value.trim() == "") {
             throw new Error(`O parâmetro ${param} não pode estar vazio`)
         }
+    };
+
+    set name(name: string) {
+        this.verifyParam("Nome", name);
+        this._name = name;
     }
 
-    setUUID(uuid:string) {
-        this.uuid = uuid
+    get name() {
+        return this._name;
+    }
+
+    get uuid() {
+        return this._uuid;
+    }
+
+    toString() {
+        return `Nome: ${this._name}; \nUUID: ${this._uuid}`
     }
 
 }

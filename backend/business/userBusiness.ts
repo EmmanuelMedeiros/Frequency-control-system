@@ -1,4 +1,5 @@
 import Admin from "../classes/Admin";
+import Employee from "../classes/Empolyee";
 import User from "../classes/User";
 
 import EndMessage from "../interface/EndMessage";
@@ -15,6 +16,19 @@ import moment from 'moment'
 require('dotenv').config()
 
 export default class UserBusiness {
+
+    static async deleteEmployee(employeUUID: string) {
+
+        let dbResponse: EndMessage
+        
+        if(!employeUUID) {
+            dbResponse = {response: 'UUID não encontrado', status: 404}
+        } else {
+            dbResponse = await UserRepository.deleteEmployee(employeUUID);
+        };
+
+        return dbResponse;
+    }
 
     static async registerFirstAdmin(admin: Admin) {
 
@@ -75,12 +89,12 @@ export default class UserBusiness {
 
     }
 
-    static async registerNewUser(user: User) {
+    static async registerNewUser(user: Employee) {
 
         const createdAt: string = moment().format('YYYY/MM/DD')
 
         let endMessage: EndMessage
-        const newUser: User = user
+        const newUser: Employee = user
 
         if(user.name.length < 4) {
             endMessage = {response: "O nome do usuário deve conter mais de 4 caracteres", status: 400}
@@ -92,9 +106,6 @@ export default class UserBusiness {
             endMessage = {response: "Esse nome já está cadastrado", status: 400}
             return endMessage
         }
-
-        const userUUID: string = crypto.randomUUID()
-        newUser.setUUID(userUUID)
 
         const dbResponse: EndMessage = await UserRepository.registerUser(newUser, createdAt)
         return dbResponse
@@ -124,14 +135,15 @@ export default class UserBusiness {
     static async checkIfUserNameExists(nameToCheck: string) {
 
         let nameAlreadyExists: boolean = false 
-        const listOfUsers: Array<User> = (await UserBusiness.getListOfUsers()).response
+        const listOfUsers: EndMessage = await UserBusiness.getListOfUsers()
 
-        listOfUsers.forEach((element) => {
-            if(element.name == nameToCheck) {
-                nameAlreadyExists = true
-            }
-        })
-
+        if(listOfUsers.status == 200) {
+            listOfUsers.response.forEach((element: {uuid: string, name: string}) => {
+                if(element.name == nameToCheck) {
+                    nameAlreadyExists = true
+                }
+            })
+        }
         return nameAlreadyExists
     }
 

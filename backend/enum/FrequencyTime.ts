@@ -1,8 +1,8 @@
 const enum FrequencyTime {
-    "BEGGINING OF DAY" = "frequency_a",
-    "LUNCH TIME" = "frequency_b",
-    "BACK FROM LUNCH" = "frequency_c",
-    "ENDING OF DAY" = "frequency_d"
+    "BEGGINING OF DAY" = "BEGGINING OF DAY",
+    "LUNCH TIME" = "LUNCH TIME",
+    "BACK FROM LUNCH" = "BACK FROM LUNCH",
+    "ENDING OF DAY" = "ENDING OF DAY"
 }
 
 export default FrequencyTime

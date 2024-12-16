@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 
-import {Express} from 'express'
+import {Express, json} from 'express'
 
 const helloWorldRouter = require('./routes/helloWorld')
 const userRouter = require('./routes/userRoute')
@@ -9,9 +9,8 @@ const frequencyRouter = require('./routes/frequencyRoute')
 
 const app:Express = express()
 
-app.use(express.json())
+app.use(json({limit: '10mb'}))
 app.use(cors())
-
 app.use(express.static('public'))
 
 app.use('/helloWorld', helloWorldRouter)
