@@ -59,6 +59,7 @@ export default class FrequencyRepository {
         let dbResponse: EndMessage
         let frequencyToSet: number = 0
         let frequencyTime: FrequencyTime = FrequencyTime["BEGGINING OF DAY"]
+        let noMoreFrequency: boolean = false 
 
         try {
 
@@ -94,7 +95,13 @@ export default class FrequencyRepository {
                 }
             }
 
-            if(frequencyToSet < 4) { 
+            result.rows.forEach((element: {frequency_type: FrequencyTime}) => {
+                if(element.frequency_type == FrequencyTime["ENDING OF DAY"]) {
+                    noMoreFrequency = true;
+                };
+            })
+
+            if((frequencyToSet == 0 || frequencyToSet == 3) && !noMoreFrequency) { 
 
                 let result
 
@@ -119,8 +126,12 @@ export default class FrequencyRepository {
                 dbResponse = {status: 200, response: [{frequencyUUID: currentFrequency.uuid}, {ponto: frequencyToSet + 1 + "° ponto"}]}
                 return dbResponse
 
+            } else if(noMoreFrequency){
+                return dbResponse = {status: 403, response: "Todos os pontos do dia já foram batidos"};
             } else {
-                return dbResponse = {status: 400, response: "Todos os pontos do dia já foram batidos"}
+                let frequencyTime: string;
+                frequencyToSet == 1 ? frequencyTime = 'saída para almoço' : frequencyTime = 'volta do almoço';
+                return dbResponse = {status: 202, response: `É importante lembrar que os pontos relativos ao horário de almoço (saída e entrada) são batidos automaticamente. Se quiser bater esse ponto, este será tido como ponto de saída do trabalho.`};
             }
 
         }catch(err: any) {

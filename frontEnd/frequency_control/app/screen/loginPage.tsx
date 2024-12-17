@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, SafeAreaView, Text, View, TouchableOpacity, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useState, useContext } from 'react'
 
@@ -15,6 +15,7 @@ import Admin from '../class/Admin'
 import AdminFunction from '../function/admin';
 
 import AdminContext from '../context/adminContext'
+import AlertMessage from '../component/alertMessage'
 
 export default function LoginPage() {
 
@@ -47,7 +48,8 @@ export default function LoginPage() {
 
     return(
         <SafeAreaView style={ !forgotPassword ? {flex: 1, justifyContent: 'center', alignContent: 'center'} : {flex: 1, justifyContent: 'center', alignContent: 'center',  backgroundColor: '#A3A3A3'}}>
-
+            
+            <AlertMessage/>
 
             <View style={{marginTop: -200, height: 200}}>
                 <LogoComponent/>

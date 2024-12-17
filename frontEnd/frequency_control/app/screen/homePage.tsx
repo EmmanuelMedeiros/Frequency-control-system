@@ -89,7 +89,7 @@ export default function HomePage() {
     return(
         <SafeAreaView style={{position: 'relative', flex: 1, justifyContent: 'center', alignContent: 'center'}}>        
 
-            <Text style={{position: 'absolute', marginLeft: .1, alignSelf: 'center', top: 110 ,color: '#535A63', fontWeight: 'bold', fontSize: 25}}>
+            <Text style={{position: 'absolute', marginLeft: .1, alignSelf: 'center', top: 110, color: '#535A63', fontWeight: 'bold', fontSize: 25}}>
                 Bater Ponto
             </Text>
 
