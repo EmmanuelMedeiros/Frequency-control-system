@@ -11,19 +11,22 @@ import PopupInput from '../component/popupInput'
 
 import ApiResult from '../interface/apiResult';
 import Admin from '../class/Admin'
+import PopupType from '../enum/popupType'
 
 import AdminFunction from '../function/admin';
 
 import AdminContext from '../context/adminContext'
 import AlertMessage from '../component/alertMessage'
+import PopupContext from '../context/popupContext'
 
 export default function LoginPage() {
 
-    const adminContext = useContext(AdminContext)
+    const adminContext = useContext(AdminContext);
+    const popupContext = useContext(PopupContext);
 
-    const [forgotPassword, setForgotPassword] = useState(false)
-    const [adminEmail, setAdminEmail] = useState<string>("")
-    const [adminPassword, setAdminPassword] = useState<string>("")
+    const [forgotPassword, setForgotPassword] = useState(false);
+    const [adminEmail, setAdminEmail] = useState<string>("");
+    const [adminPassword, setAdminPassword] = useState<string>("");
 
     const { navigate }: any = useNavigation();
 
@@ -39,7 +42,9 @@ export default function LoginPage() {
                 adminContext.setJwtToken(result.message.jwt)
                 navigate("home");
             } else {
-                console.log(result.message)
+                popupContext.setMessage(result.message);
+                popupContext.setType(PopupType.error);
+                return;
             }
         }catch(err: any) {
             console.log(err.toString())
@@ -49,8 +54,6 @@ export default function LoginPage() {
     return(
         <SafeAreaView style={ !forgotPassword ? {flex: 1, justifyContent: 'center', alignContent: 'center'} : {flex: 1, justifyContent: 'center', alignContent: 'center',  backgroundColor: '#A3A3A3'}}>
             
-            <AlertMessage/>
-
             <View style={{marginTop: -200, height: 200}}>
                 <LogoComponent/>
             </View>

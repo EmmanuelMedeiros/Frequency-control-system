@@ -38,7 +38,7 @@ export default function CameraComponent({employee, setOpenCamera}: CameraProps) 
   }
 
   const takePictureOnHandle = async () => {
-    const pictureOptions: CameraPictureOptions = {base64: true, quality: .5, shutterSound: true};
+    const pictureOptions: CameraPictureOptions = {base64: true, quality: .2, shutterSound: true};
     const photo = await camera?.takePictureAsync(pictureOptions);
 
     let apiResponse: ApiResult;

@@ -3,3 +3,5 @@ const enum PopupType {
     'warning',
     'error'
 } 
+
+export default PopupType

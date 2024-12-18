@@ -14,9 +14,9 @@ const Tab = createBottomTabNavigator();
 export default function BottomTabs() {
     return(
         <Tab.Navigator initialRouteName="Home" screenLayout={UpperHeader} screenOptions={{headerShown: false, animation: "none", tabBarStyle: {height: 70, padding: 'auto'}, title: "", tabBarHideOnKeyboard: true}}>
-            <Tab.Screen name="Home"      component={HomePage}            options={{  tabBarIcon: ({focused}) => (HomePageIcon(focused))}} />
-            <Tab.Screen name="System"    component={SystemManagementRoutes}    options={{ tabBarIcon: ({focused}) => (SystemManagementIcon(focused))}}/>
-            <Tab.Screen name="Frequency" component={FrequencyManagement} options={{  tabBarIcon: ({focused}) => (FrequencyDetailsIcon(focused))}} />
+            <Tab.Screen name="Home"      component={HomePage}                   options={{  tabBarIcon: ({focused}) => (HomePageIcon(focused))}} />
+            <Tab.Screen name="System"    component={SystemManagementRoutes}     options={{ tabBarIcon: ({focused}) => (SystemManagementIcon(focused))}}/>
+            <Tab.Screen name="Frequency" component={FrequencyManagement}        options={{  tabBarIcon: ({focused}) => (FrequencyDetailsIcon(focused))}} />
         </Tab.Navigator>
     )
 };

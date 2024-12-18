@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import Employee from "../interface/employee";
+import Employee from "../class/Employee";
 import ApiResult from "../interface/apiResult";
 import AdminFunction from "../function/admin";
 

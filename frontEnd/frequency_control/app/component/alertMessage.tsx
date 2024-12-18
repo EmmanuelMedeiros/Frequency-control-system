@@ -1,15 +1,38 @@
 import { transform } from "@babel/core"
 import { SafeAreaView, View, Text, StyleSheet } from "react-native"
 
+import { useContext, useEffect, useState } from "react"
+
 import Icons from '@expo/vector-icons/Feather'
+import PopupContext from "../context/popupContext"
 
 export default function AlertMessage() {
 
-    return(
-        <View style={alertMessageStyle.container}>
-            <Text style={alertMessageStyle.alertTitle}>ERRO!</Text>
+    const popupContext = useContext(PopupContext);
 
-            <Text style={alertMessageStyle.alertMessage}>Texto relacionado ao erro que deu, mas eu nem queria</Text>
+    const [showPopup, setShowPopup] = useState<boolean>(false);
+
+    useEffect(() => {
+
+        if(popupContext.message != undefined && popupContext.type != undefined) {
+            setShowPopup(true);
+        };
+
+        const resetPopup: NodeJS.Timeout = setTimeout(() => {
+            popupContext.setMessage(undefined);
+            popupContext.setType(undefined);
+            setShowPopup(false)
+        }, 3000)
+
+        return () => clearTimeout(resetPopup)
+
+    }, [popupContext.message, popupContext.type])
+
+    return(
+        <View style={showPopup ? alertMessageStyle.container: alertMessageStyle.notShow}>
+            <Text style={alertMessageStyle.alertTitle}>ERRO</Text>
+
+            <Text style={alertMessageStyle.alertMessage}>{popupContext.message}</Text>
         </View>
     )
 }
@@ -23,7 +46,7 @@ const alertMessageStyle = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
 
-        position: 'relative',
+        position: 'absolute',
         left: '50%',
         top: 100,
 
@@ -34,7 +57,11 @@ const alertMessageStyle = StyleSheet.create({
 
         borderRadius: 10,
 
-        paddingBlock: 20
+        paddingBlock: 20,
+    },
+
+    notShow: {
+        display: 'none'
     },
 
     alertTitle: {
