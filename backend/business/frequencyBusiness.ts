@@ -9,7 +9,7 @@ import crypto from 'crypto';
 import { stdout } from "process";
 import FrequencyTime from "../enum/FrequencyTime";
 
-const automaticFrequency = new CronJob('0 0 12,13 * * *', async function () {
+new CronJob('0 0 12,13 * * *', async function () {
     await FrequencyBusiness.hitAutomaticFrequency();
 },
     null,
@@ -17,7 +17,7 @@ const automaticFrequency = new CronJob('0 0 12,13 * * *', async function () {
     "America/Sao_Paulo"
 );
 
-const clearEmptyFrequencyHeaders = new CronJob('0 0 0 * * *', async function() {
+new CronJob('0 0 0 * * *', async function() {
     await FrequencyBusiness.deleteEmptyFrequencyHeaders();
 },
     null,
@@ -26,6 +26,27 @@ const clearEmptyFrequencyHeaders = new CronJob('0 0 0 * * *', async function() {
 );
 
 export default class FrequencyBusiness {
+
+    static async retrieveEmployeeHourBalance(): Promise<void> {
+
+        let isWeekend: boolean;
+        const weekDay: number = moment().day();
+
+        switch(weekDay) {
+            case 6:
+                isWeekend = true;
+                break;
+            case 0:
+                isWeekend = true;
+                break;
+            default: 
+                isWeekend = false;
+                break;
+        }
+
+        
+
+    }
 
     static async deleteEmptyFrequencyHeaders(): Promise<EndMessage> {
 
@@ -107,3 +128,5 @@ export default class FrequencyBusiness {
     }
 
 }
+
+FrequencyBusiness.retrieveEmployeeHourBalance();

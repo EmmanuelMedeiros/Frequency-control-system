@@ -25,12 +25,12 @@ export default function SystemManagementRoutes() {
 
 function UpperHeader({children}: any) {
     return(
-        <>
+        <SafeAreaView style={{height: '100%', width: '100%'}}>
             <View style={{height: 70, position: 'absolute', top: 0}}>
                 <HeaderComponent/>
             </View>
             
             {children}
-        </>
+        </SafeAreaView>
     )
 }
