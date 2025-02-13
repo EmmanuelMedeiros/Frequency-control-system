@@ -1,5 +1,5 @@
-<h1>Frequency Control Mobile System</h1>
-<br/>
+##Frequency Control Mobile System##
+
 ##About the project
 It's a mobile frequency control system which intens do substitute the time book, turning it into a reliable, easy-to-use and full of informations mobile application.
 <br/>
