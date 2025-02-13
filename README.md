@@ -12,5 +12,6 @@ It's a mobile frequency control system which intens do substitute the time book,
 - **Custom employee work configuration:** this system allows the admin to create any kind of employee by inserting it's workload, worktime, days off, ...
 
 ## Techonoglies Applied
-- **Back end:** JavaScript/TypeScript; Express.js; PostgreSQL; Node.js
-- **Front end:** React Native; EXPO (for native mobile features)
+- **Back end:** JavaScript/TypeScript; Express.js; Node.js, JWT Auth
+- **Front end:** React Native; EXPO (for native mobile features); Camera system; Mobile cache system; Storage system
+- **Database:** PostgreSQL
