@@ -11,5 +11,5 @@ It's a mobile frequency control system which intens do substitute the time book,
 - **Daily user report:** beside the detailed user report, the system also provides the daily user report, where you can select specific day and user, and then track all the pictures and moment of frequencies;
 - **Custom employee work configuration:** this system allows the admin to create any kind of employee by inserting it's workload, worktime, days off, ...
 
-## Techonoglies used
+## Techonoglies Applied
 - **Back end:** Express.js; PostgreSQL; 
