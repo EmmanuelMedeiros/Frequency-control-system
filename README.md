@@ -1,30 +1,72 @@
-# Frequency Control Mobile System
+# 📱 Frequency Control Mobile System
 
-## About the project
-It's a mobile frequency control system which intens do substitute the time book, turning it into a reliable, easy-to-use and full of informations mobile application.
-<br/>
-## Main Features
-- **Authentication system:** the system has two roles: admin and employee. The employees are only capable of saving entries in the frequency system, and also take a look at their extra/missing hours and faults;
-- **JWT Authorization:** all application endpoints requires the JWT authorization, that way, providing more security to the system features;
-- **Native Camera System:** to save the entries, the employees have to select their profiles and then take a photo, which will be saved in the database (base64) along with their ID and current moment;
-- **Detailed user report:** in order to check the detailed user's report, the system provides a XLSX file returning all the frequencies with it's moment, day and user, for a specific time period;
-- **Daily user report:** beside the detailed user report, the system also provides the daily user report, where you can select specific day and user, and then track all the pictures and moment of frequencies;
-- **Custom employee work configuration:** this system allows the admin to create any kind of employee by inserting it's workload, worktime, days off, ...
+## 📌 About the Project
 
-## Description
+A mobile frequency control system designed to replace traditional time books. This application is **reliable**, **user-friendly**, and **informative**, providing employees and administrators with a complete toolset for managing work attendance digitally.
 
-- This application is a workforce attendance tracking system designed to monitor and manage employee check-ins with added security and customization. It features a role-based authentication system with two roles: admin and employee. Employees can log their attendance, view their extra or missing hours, and check for any absences. Admins, on the other hand, have access to advanced management features.
+---
 
-- To register an entry, employees must select their profile and take a photo using the device’s native camera. This photo is saved in the database (as a base64 string) along with the employee's ID and the exact timestamp.
+## ✨ Main Features
 
-- All endpoints are protected by JWT-based authorization, ensuring secure access to all system features.
+- 🔐 **Authentication System:**  
+  Two roles available — `admin` and `employee`.  
+  - **Employees** can save check-ins, view their overtime, missing hours, and attendance faults.  
+  - **Admins** have extended control and access to management features.
 
-- For reporting, the system offers two key tools:
-    - A detailed report, which generates an XLSX file with all attendance entries for a selected time period, including user, date, and time.
-    - A daily report, where admins can view all check-ins for a specific user and day, including the corresponding photos and timestamps.
-    - Additionally, the system supports custom work schedules, allowing admins to define each employee's workload, working hours, and days off based on specific needs.
+- 🔑 **JWT Authorization:**  
+  All API endpoints require JWT-based authentication, ensuring secure and restricted access to application features.
 
-## Techonoglies Applied
-- **Back end:** JavaScript/TypeScript; Express.js; Node.js, JWT Auth
-- **Front end:** React Native; EXPO (for native mobile features); Camera system; Mobile cache system; Storage system
-- **Database:** PostgreSQL
+- 📸 **Native Camera Integration:**  
+  Employees must select their profile and take a photo using the device’s camera.  
+  The photo is saved as a base64 string in the database along with the user's ID and timestamp.
+
+- 📊 **Detailed User Reports:**  
+  Generate `.xlsx` reports for a selected period, listing:
+  - All attendance logs
+  - Timestamps
+  - Days and users
+
+- 🗓️ **Daily User Reports:**  
+  View a specific user's attendance for a selected day, including:
+  - Time of check-ins
+  - Captured photos
+
+- ⚙️ **Custom Work Configuration:**  
+  Admins can configure each employee's:
+  - Workload
+  - Work time
+  - Days off  
+  Tailored to fit diverse employment schedules.
+
+---
+
+## 📖 Description
+
+This application acts as a digital **workforce attendance tracking system**. It helps organizations ensure punctuality, transparency, and automation in attendance logging. Employees authenticate via secure JWT tokens, take photos during check-ins, and rely on an intuitive mobile interface built with modern tools.
+
+Data integrity is maintained with photo-verification and role-based permissions. Admins benefit from powerful reporting features, including Excel exportation and custom filters.
+
+The system provides a strong foundation for any business looking to modernize its attendance management using **mobile-first**, **secure**, and **scalable** technologies.
+
+---
+
+## 🧪 Technologies Used
+
+### 🔧 Back End
+- **Node.js**
+- **Express.js**
+- **TypeScript / JavaScript**
+- **JWT (JSON Web Token)** for secure authentication
+
+### 📱 Front End
+- **React Native**
+- **Expo** for native mobile features
+- **Camera System** for photo-based check-ins
+- **Local Storage & Cache System**
+
+### 🗃️ Database
+- **PostgreSQL**
+
+---
+
+> 💡 _Looking to improve or contribute? Feel free to fork and open a pull request!_
