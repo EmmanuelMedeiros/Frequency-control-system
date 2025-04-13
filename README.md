@@ -68,5 +68,3 @@ The system provides a strong foundation for any business looking to modernize it
 - **PostgreSQL**
 
 ---
-
-> 💡 _Looking to improve or contribute? Feel free to fork and open a pull request!_
